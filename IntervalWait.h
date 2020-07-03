@@ -13,9 +13,18 @@
 
 
 
+class Mmcss {
+    public:
+        ~Mmcss() noexcept   { DwmEnableMMCSS(FALSE); }
+        
+        Mmcss()             { DwmEnableMMCSS(TRUE); }
+};
+
+
+
 class IntervalWait {
     public:
-        ~IntervalWait()
+        ~IntervalWait() noexcept
         {
             if (mhShutdown) SetEvent(mhShutdown);
             if (mhThread) WaitForSingleObject(mhThread, INFINITE);
@@ -40,7 +49,7 @@ class IntervalWait {
         
         
         
-        void Wait()
+        void Wait() const noexcept
         {
             WaitForSingleObject(mhWait, INFINITE);
         }
@@ -48,7 +57,7 @@ class IntervalWait {
     
     
     private:
-        DWORD Thread()
+        DWORD Thread() const noexcept
         {
             HMODULE hDll = NULL;
             HANDLE hRevert = NULL;
@@ -64,8 +73,6 @@ class IntervalWait {
             ULONG Current = 0;
             
             do {
-                if (DwmEnableMMCSS(TRUE) != S_OK) break;
-                
                 hDll = LoadLibrary("ntdll.dll");
                 if (!hDll) break;
                 
@@ -103,8 +110,6 @@ class IntervalWait {
                     Absolute += mInterval;
                     Relative = Absolute - (Counter.QuadPart * Precision);
                 }
-                
-                DwmEnableMMCSS(FALSE);
             } while (false);
             
             if (hTimer) CloseHandle(hTimer);
@@ -118,7 +123,7 @@ class IntervalWait {
         
         
         
-        static DWORD Thread(void* pVoid)
+        static DWORD Thread(void* pVoid) noexcept
         {
             auto pThis = reinterpret_cast<IntervalWait*>(pVoid);
             return pThis->Thread();

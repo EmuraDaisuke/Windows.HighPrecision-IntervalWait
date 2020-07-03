@@ -25,6 +25,8 @@ double Now()
 
 int main(int argc, char* argv[])
 {
+    Mmcss m;
+    
 //  IntervalWait Interval(/*ms*/1 * /*us*/1000 * /*ns*/1000);
 //  IntervalWait Interval(/*us*/1000 * /*ns*/1000);
     IntervalWait Interval(3333333);
