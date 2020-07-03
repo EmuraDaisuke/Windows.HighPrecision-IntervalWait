@@ -5,8 +5,10 @@
 #include <cstddef>
 
 #include <windows.h>
+#include <dwmapi.h>
 #include <avrt.h>
 
+#pragma comment(lib, "dwmapi.lib")
 #pragma comment(lib, "avrt.lib")
 
 
@@ -62,6 +64,8 @@ class IntervalWait {
             ULONG Current = 0;
             
             do {
+                if (DwmEnableMMCSS(TRUE) != S_OK) break;
+                
                 hDll = LoadLibrary("ntdll.dll");
                 if (!hDll) break;
                 
@@ -99,6 +103,8 @@ class IntervalWait {
                     Absolute += mInterval;
                     Relative = Absolute - (Counter.QuadPart * Precision);
                 }
+                
+                DwmEnableMMCSS(FALSE);
             } while (false);
             
             if (hTimer) CloseHandle(hTimer);
