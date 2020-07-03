@@ -3,6 +3,7 @@
 
 
 #include <cstddef>
+#include <atomic>
 
 #include <windows.h>
 #include <dwmapi.h>
@@ -15,9 +16,23 @@
 
 class Mmcss {
     public:
-        ~Mmcss() noexcept   { DwmEnableMMCSS(FALSE); }
+        ~Mmcss() noexcept                   { Destruct(); }
         
-        Mmcss()             { DwmEnableMMCSS(TRUE); }
+        Mmcss()                             { Construct(); }
+        Mmcss(const Mmcss&)                 = delete;
+        Mmcss(Mmcss&&)                      = delete;
+        
+        Mmcss& operator =(const Mmcss&)     = delete;
+        Mmcss& operator =(Mmcss&&)          = delete;
+    
+    private:
+        static void Destruct() noexcept     { if (--snInstance == 0) DwmEnableMMCSS(FALSE); }
+        
+        static void Construct() noexcept    { if (snInstance++ == 0) DwmEnableMMCSS(TRUE); }
+    
+    
+    private:
+        static inline std::atomic_uint32_t snInstance = 0;
 };
 
 
