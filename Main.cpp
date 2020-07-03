@@ -18,7 +18,7 @@
 double Now()
 {
     using namespace std::chrono;
-    return static_cast<double>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count()) / 1000000000;
+    return duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count() / 1000000000.0;
 }
 
 
