@@ -16,19 +16,14 @@
 
 class Mmcss {
     public:
-        ~Mmcss() noexcept                   { Destruct(); }
+        ~Mmcss() noexcept                   { if (--snInstance == 0) DwmEnableMMCSS(FALSE); }
         
-        Mmcss()                             { Construct(); }
+        Mmcss()                             { if (snInstance++ == 0) DwmEnableMMCSS(TRUE); }
         Mmcss(const Mmcss&)                 = delete;
         Mmcss(Mmcss&&)                      = delete;
         
         Mmcss& operator =(const Mmcss&)     = delete;
         Mmcss& operator =(Mmcss&&)          = delete;
-    
-    private:
-        static void Destruct() noexcept     { if (--snInstance == 0) DwmEnableMMCSS(FALSE); }
-        
-        static void Construct() noexcept    { if (snInstance++ == 0) DwmEnableMMCSS(TRUE); }
     
     
     private:
