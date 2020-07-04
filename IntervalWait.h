@@ -34,6 +34,14 @@ class Mmcss {
 
 class IntervalWait {
     public:
+        enum eLimiter {
+            eLimiter_Average,
+            eLimiter_Minimum,
+        };
+    
+    
+    
+    public:
         ~IntervalWait() noexcept
         {
             if (mhShutdown) SetEvent(mhShutdown);
@@ -46,8 +54,9 @@ class IntervalWait {
         
         
         
-        IntervalWait(int64_t nsec)
+        IntervalWait(int64_t nsec, eLimiter Limiter = eLimiter_Average)
         :mInterval(nsec)
+        ,mLimiter((Limiter == eLimiter_Average)? 0:-1)
         ,mhWait(NULL)
         ,mhShutdown(NULL)
         ,mhThread(NULL)
@@ -111,7 +120,7 @@ class IntervalWait {
                 
                 while (WaitForSingleObject(mhShutdown, 0) != WAIT_OBJECT_0){
                     Counter.QuadPart = (mInterval + Relative) / -Precision;
-                    Counter.QuadPart = (Counter.QuadPart < 0)? Counter.QuadPart: 0;
+                    Counter.QuadPart = (Counter.QuadPart < 0)? Counter.QuadPart: mLimiter;
                     SetWaitableTimer(hTimer, &Counter, 0, NULL, NULL, FALSE);
                     WaitForSingleObject(hTimer, INFINITE);
                     
@@ -144,6 +153,7 @@ class IntervalWait {
     
     private:
         int64_t mInterval;
+        LONGLONG mLimiter;
         
         HANDLE mhWait;
         HANDLE mhShutdown;
