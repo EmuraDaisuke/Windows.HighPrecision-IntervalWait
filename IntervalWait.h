@@ -34,9 +34,9 @@ class Mmcss {
 
 class IntervalWait {
     public:
-        enum eLimiter {
-            eLimiter_Average,
-            eLimiter_Minimum,
+        enum class eLimiter {
+            Average,
+            Minimum,
         };
     
     
@@ -54,9 +54,9 @@ class IntervalWait {
         
         
         
-        IntervalWait(int64_t nsec, eLimiter Limiter = eLimiter_Average)
+        IntervalWait(int64_t nsec, eLimiter Limiter = eLimiter::Average)
         :mInterval(nsec)
-        ,mLimiter((Limiter == eLimiter_Average)? 0:-1)
+        ,mLimiter((Limiter == eLimiter::Average)? 0:-1)
         ,mhWait(NULL)
         ,mhShutdown(NULL)
         ,mhThread(NULL)

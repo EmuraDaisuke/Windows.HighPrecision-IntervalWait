@@ -29,7 +29,8 @@ int main(int argc, char* argv[])
     
 //  IntervalWait Interval(/*ms*/1 * /*us*/1000 * /*ns*/1000);
 //  IntervalWait Interval(/*us*/1000 * /*ns*/1000);
-    IntervalWait Interval(3333333);
+//  IntervalWait Interval(3333333);
+    IntervalWait Interval(1, IntervalWait::eLimiter::Minimum);
     
     double vOld = Now();
     double vNow = Now();
