@@ -111,6 +111,7 @@ class IntervalWait {
                 
                 while (WaitForSingleObject(mhShutdown, 0) != WAIT_OBJECT_0){
                     Counter.QuadPart = (mInterval + Relative) / -Precision;
+                    Counter.QuadPart = (Counter.QuadPart < 0)? Counter.QuadPart: 0;
                     SetWaitableTimer(hTimer, &Counter, 0, NULL, NULL, FALSE);
                     WaitForSingleObject(hTimer, INFINITE);
                     
