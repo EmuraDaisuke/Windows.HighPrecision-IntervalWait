@@ -47,9 +47,9 @@ class IntervalWait {
             if (mhShutdown) SetEvent(mhShutdown);
             if (mhThread) WaitForSingleObject(mhThread, INFINITE);
             
-            CloseHandle(mhThread);
-            CloseHandle(mhShutdown);
-            CloseHandle(mhWait);
+            if (mhThread) CloseHandle(mhThread);
+            if (mhShutdown) CloseHandle(mhShutdown);
+            if (mhWait) CloseHandle(mhWait);
         }
         
         
@@ -57,13 +57,33 @@ class IntervalWait {
         IntervalWait(int64_t nsec, eLimiter Limiter = eLimiter::Average)
         :mInterval(nsec)
         ,mLimiter((Limiter == eLimiter::Average)? 0:-1)
-        ,mhWait(NULL)
-        ,mhShutdown(NULL)
-        ,mhThread(NULL)
+        ,mhWait(CreateEvent(NULL, FALSE, TRUE, NULL))
+        ,mhShutdown(CreateEvent(NULL, FALSE, FALSE, NULL))
+        ,mhThread(CreateThread(NULL, 0, Thread, this, 0, NULL))
         {
-            mhWait = CreateEvent(NULL, FALSE, TRUE, NULL);
-            mhShutdown = CreateEvent(NULL, FALSE, FALSE, NULL);
-            mhThread = CreateThread(NULL, 0, Thread, this, 0, NULL);
+        }
+        
+        
+        
+        IntervalWait(IntervalWait&& v)
+        :mInterval(v.mInterval)
+        ,mLimiter(v.mLimiter)
+        ,mhWait(v.mhWait)
+        ,mhShutdown(v.mhShutdown)
+        ,mhThread(v.mhThread)
+        {
+            v.mInterval = 0;
+            v.mLimiter = 0;
+            v.mhWait = NULL;
+            v.mhShutdown = NULL;
+            v.mhThread = NULL;
+        }
+        
+        
+        
+        IntervalWait& operator =(IntervalWait&& v)
+        {
+            new(this) IntervalWait(std::move(v)); return *this;
         }
         
         
@@ -72,6 +92,13 @@ class IntervalWait {
         {
             WaitForSingleObject(mhWait, INFINITE);
         }
+    
+    
+    
+    public:
+        IntervalWait(const IntervalWait&)               = delete;
+        
+        IntervalWait& operator =(const IntervalWait&)   = delete;
     
     
     
