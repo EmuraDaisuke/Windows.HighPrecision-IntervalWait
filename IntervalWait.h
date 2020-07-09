@@ -34,6 +34,8 @@ class Mmcss {
 
 class IntervalWait {
     public:
+        static constexpr int64_t c1Sec = 1000000000;   // 1SecInNSec
+        
         enum class eLimiter {
             Average,
             Minimum,
@@ -141,7 +143,7 @@ class IntervalWait {
                 QueryPerformanceFrequency(&Frequency);
                 QueryPerformanceCounter(&Counter);
                 
-                int64_t Precision = (/*sec*/1ll * /*msec*/1000 * /*usec*/1000 * /*nsec*/1000) / Frequency.QuadPart;
+                int64_t Precision = IntervalWait::c1Sec / Frequency.QuadPart;
                 int64_t Absolute = Counter.QuadPart * Precision;
                 int64_t Relative = 0;
                 
